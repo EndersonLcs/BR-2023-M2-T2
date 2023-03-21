@@ -21,6 +21,9 @@ class ObstacleManager:
         for obstacle in self.obstacles:
             obstacle.update(game.game_speed, self.obstacles)
             if game.player.dino_rect.colliderect(obstacle.rect):
+                #game.score = 0
+                #game.game_speed = 20
+                game.death_count += 1
                 pygame.time.delay(500)
                 game.playing = False
                 break
