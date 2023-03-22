@@ -29,7 +29,7 @@ class ObstacleManager:
                     game.playing = False
                     break
                 else:
-                    self.obstacles.remove(obstacle)
+                    game.playing = True
 
     def draw(self, screen):
         for obstacle in self.obstacles:
