@@ -1,6 +1,6 @@
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, GAME_OVER,DEFAULT_TYPE
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, GAME_OVER,DEFAULT_TYPE, HEART_TYPE
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacleManager import ObstacleManager
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
@@ -22,6 +22,7 @@ class Game:
         self.y_pos_bg = 380
         self.score = 0
         self.death_count = 0
+        self.top_score = 0
 
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
@@ -58,12 +59,13 @@ class Game:
         self.player.update(user_input)
         self.obstacle_manager.update(self)
         self.update_score()
+        self.top()
         self.power_up_manager.update(self.score, self.game_speed, self.player)
 
     def update_score(self):
         self.score += 1
-        if self.score % 500 == 0:
-            self.game_speed += 5
+        if self.score % 100 == 0:
+            self.game_speed += 2
 
     def initial_score_speed(self):
         self.score = 0
@@ -76,6 +78,7 @@ class Game:
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.draw_score()
+        self.dreaw_top_score()
         self.draw_power_up_time()
         self.power_up_manager.draw(self.screen)
         pygame.display.update()         
@@ -97,11 +100,20 @@ class Game:
         text_rect.center = (x, y)
         self.screen.blit(text, text_rect)
 
+    def top(self):
+       if self.score > self.top_score:
+           self.top_score = self.score
+
+    def dreaw_top_score(self):
+        self.draw_text(f"top score: {self.top_score}", 22, 100, 50)
+
     def draw_score(self):
         self.draw_text(f"score: {self.score}", 22, 1000, 50)
 
     def draw_power_up_time(self):
         if self.player.has_power_up:
+            if self.player.type == HEART_TYPE:
+                self.score += 2
             time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2)
             if time_to_show >= 0:
                 self.draw_text(
@@ -132,8 +144,9 @@ class Game:
             
         elif self.death_count >= 1:
             self.draw_text("press any key to restart", 25, 550,250)
-            self.draw_text(f"Your Score: {self.score}", 15, 991, 35)
-            self.draw_text(f"Death Counter: {self.death_count}", 15, 1000, 65)
+            self.draw_text(f"Your Score: {self.score}", 15, 550, 500)
+            self.draw_text(f"top score: {self.top_score}", 15, 100,500)
+            self.draw_text(f"Death Counter: {self.death_count}", 15, 1000, 500)
             self.screen.blit(GAME_OVER, (half_screen_width - 180, half_screen_height - 170))
             ## mostrar mensagem "Press any key to restart" OK!
             ## mostrar pontuação atingida OK!
